@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-service
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: appointment-service
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.port }}

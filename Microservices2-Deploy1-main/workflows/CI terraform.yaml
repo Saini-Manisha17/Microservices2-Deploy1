@@ -1,0 +1,55 @@
+name: Terraform CI
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # -----------------------------
+    # Setup Terraform
+    # -----------------------------
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    # -----------------------------
+    # Terraform fmt
+    # -----------------------------
+    - name: Terraform Format
+      run: terraform fmt -check -recursive
+
+    # -----------------------------
+    # Authenticate to GCP
+    # -----------------------------
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    # -----------------------------
+    # Init
+    # -----------------------------
+    - name: Terraform Init
+      run: terraform init
+
+    # -----------------------------
+    # Validate
+    # -----------------------------
+    - name: Terraform Validate
+      run: terraform validate
+
+    # -----------------------------
+    # Terraform Plan
+    # -----------------------------
+    - name: Terraform Plan
+      run: terraform plan -var-file=envs/dev/terraform.tfvars

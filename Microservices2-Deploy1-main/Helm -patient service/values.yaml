@@ -1,0 +1,25 @@
+replicaCount: 2
+
+image:
+  repository: myacr.azurecr.io/patient-service
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+env:
+  - name: DB_URL
+    valueFrom:
+      secretKeyRef:
+        name: patient-secrets
+        key: db_url
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi

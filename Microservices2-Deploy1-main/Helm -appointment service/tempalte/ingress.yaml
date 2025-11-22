@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: appointment-service-ingress
+spec:
+  rules:
+  - host: appointment.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: appointment-service
+            port:
+              number: {{ .Values.service.port }}
