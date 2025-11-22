@@ -1,0 +1,58 @@
+name: CI Microservices
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "patient-service/**"
+      - "appointment-service/**"
+      - "order-service/**"
+  pull_request:
+    paths:
+      - "patient-service/**"
+      - "appointment-service/**"
+      - "order-service/**"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # -----------------------------
+    # Authenticate with Google Cloud
+    # -----------------------------
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Configure Docker for Artifact Registry
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    # -----------------------------
+    # Build & push Patient Service
+    # -----------------------------
+    - name: Build & Push Patient Service Image
+      run: |
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/patient-service:latest ./patient-service
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/patient-service:latest
+
+    # -----------------------------
+    # Build & push Appointment Service
+    # -----------------------------
+    - name: Build & Push Appointment Service Image
+      run: |
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/appointment-service:latest ./appointment-service
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/appointment-service:latest
+
+    # -----------------------------
+    # Build & push Order Service (Java)
+    # -----------------------------
+    - name: Build & Push Order Service Image
+      run: |
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/order-service:latest ./order-service
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/microservices/order-service:latest
