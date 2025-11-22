@@ -1,19 +1,19 @@
 replicaCount: 2
 
 image:
-  repository: myacr.azurecr.io/appointment-service
+  repository: myacr.azurecr.io/patient-service
   tag: "latest"
   pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
-  port: 3001
+  port: 3000
 
 env:
   - name: DB_URL
     valueFrom:
       secretKeyRef:
-        name: appointment-secrets
+        name: patient-secrets
         key: db_url
 
 resources:
