@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: order-service-ingress
+  name: appointment-service-ingress
 spec:
   rules:
-  - host: order.example.com
+  - host: appointment.example.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: order-service
+            name: appointment-service
             port:
               number: {{ .Values.service.port }}
