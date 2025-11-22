@@ -1,33 +1,19 @@
-module "network" {
-  source            = "./modules/network"
-  project_id        = var.project_id
-  region            = var.region
-  vpc_cidr          = var.vpc_cidr
-  public_subnet_cidr  = var.public_subnet_cidr
-  private_subnet_cidr = var.private_subnet_cidr
+resource "google_compute_network" "vpc" {
+  name                    = "vpc-${var.project_id}"
+  auto_create_subnetworks = false
 }
 
-module "artifact_registry" {
-  source       = "./modules/container-registry"
-  project_id   = var.project_id
-  region       = var.region
-  registry_name = "${var.env}-registry"
+resource "google_compute_subnetwork" "public" {
+  name          = "public-subnet"
+  ip_cidr_range = var.public_subnet_cidr
+  region        = var.region
+  network       = google_compute_network.vpc.id
 }
 
-module "secret_manager" {
-  source      = "./modules/secret-manager"
-  project_id  = var.project_id
-  secrets     = var.secrets
-}
-
-module "gke" {
-  source             = "./modules/gke"
-  project_id         = var.project_id
-  region             = var.region
-  cluster_name       = "${var.env}-gke"
-  node_count         = var.node_count
-  node_machine_type  = var.node_machine_type
-  network            = module.network.vpc_name
-  subnetwork         = module.network.private_subnet_name
-  artifact_registry  = module.artifact_registry.repository_id
+resource "google_compute_subnetwork" "private" {
+  name          = "private-subnet"
+  ip_cidr_range = var.private_subnet_cidr
+  region        = var.region
+  network       = google_compute_network.vpc.id
+  private_ip_google_access = true
 }
