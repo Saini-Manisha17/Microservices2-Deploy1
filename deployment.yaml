@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: appointment-service
+  name: patient-service
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: appointment-service
+      app: patient-service
   template:
     metadata:
       labels:
-        app: appointment-service
+        app: patient-service
     spec:
       containers:
-      - name: appointment-service
+      - name: patient-service
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
